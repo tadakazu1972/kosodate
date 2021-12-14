@@ -160,6 +160,40 @@
 			border-radius: 0px;
 			background: white;
 		}
+		/*検索ボタン*/
+		#btnSearch {
+			border: none;
+			position: absolute;
+			top: 90%;
+			left: 50%;
+			transform: translateX(-50%);
+			-webkit- transform: translateX(-50%);
+			color: #FFF;/*文字・アイコン色*/
+  			border-radius: 25px;/*角丸に*/
+  			display: inline-block;
+  			height: 36px;/*高さ*/
+  width: 50%;/*幅*/
+	max-width: 360px;
+  text-align: center;/*中身を中央寄せ*/
+  font-size: 18px;/*文字のサイズ*/
+  line-height: 28px;/*高さと合わせる*/
+  vertical-align: middle;/*垂直中央寄せ*/
+  background: #4966c0;
+  overflow: hidden;/*はみ出た部分を隠す*/
+  text-decoration:none;/*下線は消す*/
+	box-shadow: 0px 6px 6px rgba(0, 0, 0, 0.29);
+  border-bottom: solid 6px #224466;
+}
+
+#btnSearch:active {
+	position: absolute;
+	top: 91%;
+	left: 50%;
+	transform: translateX(-50%);
+	-webkit- transform: translateX(-50%);
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2);
+  border-bottom: none;
+}
 		/*RESPONSIVE: スマートフォン ウィンドウ幅600px以下*/
 		@media screen and (max-width:600px) {
 			img { position:absolute; top:0px; left:0px; width:50px; height:16px; }
@@ -184,15 +218,265 @@
 	<div class="summary">
 		<p><div id="kuname2"></div></p>
 	</div>
-	<div class="accordion" style="float:left; width:100%"></div>
-	<!--<button class="checkMap" onClick="displayMap()">地図　表示</button>-->
-	<!--<button class="backButton" onClick="backIndex()">区選択へ戻る</button>-->
-	<div id="department">
+	<body onload="drawResult()">
+		  <div class="bar">選択区内　委託医療機関一覧</div>
+		  <ul id="list" style="list-style:none;"></ul>
+		</div>
+	<!--<div id="department">
 		<h2>このページの作成者・問合せ先</h2>
 		<h2>大阪市〇〇区役所保健福祉課</h2>
 		<h5>電話：０６−００００−００００</h5>
-	</div>
+	</div>-->
 	<script>
+		//グローバル
+		var clinicData = new Array(); //委託医療機関データ全て格納
+		//委託医療機関データクラス
+		//№,名称,郵便番号,住所,方書,電話番号,市町村区分,ロタリックス,ロタテック,Ｈｉｂ,小児用肺炎球菌,Ｂ型肝炎,四種混合,MR,水痘,日本脳炎,二種混合,子宮頸がん,高齢者インフルエンザ,高齢者肺炎球菌,BCG
+		function ClinicData(_id, _name, _zip, _address, _address2, _tel, _ku, _rotarix, _rotateq, _hib, _pcv13, _hepatitisB, _dpt-ipv, _mr, _chickenpox, _japaneseencephalitis, _dt2, _cervicalcancer, _elderlyinfluenza, _elderlypneumococcus, _bcg){
+  			this.id = _id;
+  			this.file = _file;
+  			this.facility = _facility;
+  			this.place = _place;
+  			this.name = _name;
+  			this.category = _category;
+  			this.top = _top;
+  			this.date = _date;
+  			this.time = _time;
+  			this.submit = _submit;
+  			this.fee = _fee;
+  			this.target = _target;
+  			this.station = _station;
+  			this.address = _address;
+  			this.tel = _tel;
+  			this.question = _question;
+  			this.etc = _etc;
+		}
+
+		//施設描画
+function drawResult(){
+  //施設名、緯度経度のパラメーターの受け取り
+  var param = location.search; // アドレスの「?」以降の引数(パラメータ)を取得
+  param = param.substring(1); //先頭の?をカット
+  var pair = param.split("&"); //&で引数を分割
+  var temp = "";
+  var key = new Array();
+  for (var i=0;i<pair.length;i++){
+    temp = pair[i].split("="); //配列を=で分割
+    keyName = temp[0];
+    keyValue = temp[1];
+    //キーと値の連想配列を生成
+    key[keyName] = keyValue;
+  }
+  var fromMonth = decodeURIComponent(key["fromMonth"]);
+  var fromDate  = decodeURIComponent(key["fromDate"]);
+  var toMonth   = decodeURIComponent(key["toMonth"]);
+  var toDate    = decodeURIComponent(key["toDate"]);
+  var facility  = decodeURIComponent(key["facility"]);
+  var category  = decodeURIComponent(key["category"]);
+  var word      = decodeURIComponent(key["freeword"]);
+  var header = document.getElementById("header");
+  header.innerHTML = facility;
+  //イベント一覧のcsvファイル読み込み
+  var xhr = new XMLHttpRequest();
+  xhr.onload = function(){
+    //var container = document.getElementById("list"); //リスト描画タグ確保
+    var tempArray = xhr.responseText.split("\n");
+    /*
+    以前は以下の日付昇順ソートを使っていたが、data2017c.csvによって元データを日付昇順したデータを用いる
+    こととなったため、必要なくなり、実行スピードのほうを選択するためコメントアウトすることとする。
+    //とりあえず全データを日付昇順でバブルソート
+    csvArray2 = new Array();
+    csvArray3 = new Array();
+    tempArray2 = new Array();
+    var u,v;
+    for(u=0;u<tempArray.length-1;u++){
+      for(v=tempArray.length-1; v>u; v--){
+        //現時点のデータ取得
+        csvArray2 = tempArray[v].split(",");
+        var tempDate1Str = csvArray2[7].slice(0,-3); //開催日の文字列『１０/９（祝）」から「（祝）」を捨てる
+        var tempDate1Pair = tempDate1Str.split("/"); //"/"の文字で分割して配列にする
+        var tempDate1 = new Date(2017, tempDate1Pair[0]-1, tempDate1Pair[1]);
+        //１つ前のデータ取得
+        csvArray3 = tempArray[v-1].split(",");
+        var tempDate2Str = csvArray3[7].slice(0,-3); //開催日の文字列『１０/９（祝）」から「（祝）」を捨てる
+        var tempDate2Pair = tempDate2Str.split("/"); //"/"の文字で分割して配列にする
+        var tempDate2 = new Date(2017, tempDate2Pair[0]-1, tempDate2Pair[1]);
+        if ( tempDate2 > tempDate1 ) {
+          tempArray2 = tempArray[v];
+          tempArray[v] = tempArray[v-1];
+          tempArray[v-1] = tempArray2;
+        }
+      }
+    }*/
+    //ソート完了後
+    var csvArray = new Array();
+    for(var i=1;i<tempArray.length;i++){ //i=1はヘッダーを読み込ませないため
+      csvArray[i] = tempArray[i].split(",");
+      var data = csvArray[i];
+      //とりあえず読み込んだすべてのデータをDataクラスの配列に格納
+      eventData[i] = new EventData(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13],data[14],data[15],data[16]);
+      //日付処理:引き継いだパラメータから検索開始日と検索終了日をDate型でつくり、csvから開催日をDate型をつくり、比較させる
+      var date1 = new Date(2017, fromMonth-1, fromDate); //月は-1を忘れずに!!
+      var date2 = new Date(2017, toMonth-1, toDate);
+      var tempDateStr = data[7].slice(0,-3); //開催日の文字列『１０/９（祝）」から「（祝）」を捨てる
+      var tempDatePair = tempDateStr.split("/"); //"/"の文字で分割して配列にする
+      var date3 = new Date(2017, tempDatePair[0]-1, tempDatePair[1]); //これで開催日作成
+      //３つのDateを比較し、はさまれた開催日のみ表示
+      if (date1 <= date3){
+        if (date3 <= date2){
+          if (facility == "すべて"){
+            if (category == "すべて"){
+              if (word == ""){
+                var item = document.createElement("div");
+                item.className = "list";
+                item.style.border = "solid";
+                if (window.innerWidth >= 640){
+                  item.style.width = "630px";
+                }
+                item.style.margin = "auto";
+                item.style.padding = "4px";
+                item.style.cursor = "pointer";
+                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
+                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
+                document.body.appendChild(item);
+              } else if (tempArray[i].match(word)){
+                var item = document.createElement("div");
+                item.className = "list";
+                item.style.border = "solid";
+                if (window.innerWidth >= 640){
+                  item.style.width = "630px";
+                }
+                item.style.margin = "auto";
+                item.style.padding = "4px";
+                item.style.cursor = "pointer";
+                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
+                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
+                document.body.appendChild(item);
+              };
+            } else if (category == data[5]){
+              if (word == ""){
+                var item = document.createElement("div");
+                item.className = "list";
+                item.style.border = "solid";
+                if (window.innerWidth >= 640){
+                  item.style.width = "630px";
+                }
+                item.style.margin = "auto";
+                item.style.padding = "4px";
+                item.style.cursor = "pointer";
+                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
+                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
+                document.body.appendChild(item);
+              } else if (tempArray[i].match(word)){
+                var item = document.createElement("div");
+                item.className = "list";
+                item.style.border = "solid";
+                if (window.innerWidth >= 640){
+                  item.style.width = "630px";
+                }
+                item.style.margin = "auto";
+                item.style.padding = "4px";
+                item.style.cursor = "pointer";
+                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
+                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
+                document.body.appendChild(item);
+              };
+            };
+          } else if (facility == data[2]){
+            if (category == "すべて"){
+              if (word == ""){
+                var item = document.createElement("div");
+                item.className = "list";
+                item.style.border = "solid";
+                if (window.innerWidth >= 640){
+                  item.style.width = "630px";
+                }
+                item.style.margin = "auto";
+                item.style.padding = "4px";
+                item.style.cursor = "pointer";
+                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
+                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
+                document.body.appendChild(item);
+              } else if (tempArray[i].match(word)){
+                var item = document.createElement("div");
+                item.className = "list";
+                item.style.border = "solid";
+                if (window.innerWidth >= 640){
+                  item.style.width = "630px";
+                }
+                item.style.margin = "auto";
+                item.style.padding = "4px";
+                item.style.cursor = "pointer";
+                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
+                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
+                document.body.appendChild(item);
+              };
+            } else if (category == data[5]){
+              if (word == ""){
+                var item = document.createElement("div");
+                item.className = "list";
+                item.style.border = "solid";
+                if (window.innerWidth >= 640){
+                  item.style.width = "630px";
+                }
+                item.style.margin = "auto";
+                item.style.padding = "4px";
+                item.style.cursor = "pointer";
+                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
+                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
+                document.body.appendChild(item);
+              } else if (tempArray[i].match(word)){
+                var item = document.createElement("div");
+                item.className = "list";
+                item.style.border = "solid";
+                if (window.innerWidth >= 640){
+                  item.style.width = "630px";
+                }
+                item.style.margin = "auto";
+                item.style.padding = "4px";
+                item.style.cursor = "pointer";
+                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
+                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
+                document.body.appendChild(item);
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+  xhr.open("get", "data2017c.csv", true);
+  xhr.send(null);
+}
+
+function clickList(num){
+  //window.confirm("id:"+num+"がクリックされた");
+  var _id = encodeURIComponent(eventData[num].id);
+  var param = "id="+_id;
+  location.href = "./event.html?"+param;
+}
+
+
+
+
+	function drawSearch(){
+        //区のselect optionをセット
+        var ku_name = ["すべて","北区","都島区","福島区","此花区","中央区","西区","港区","大正区","天王寺区","浪速区","西淀川区","淀川区","東淀川区","東成区","生野区","旭区","城東区","鶴見区","阿倍野区","住之江区",,"住吉区","東住吉区","平野区","西成区"];
+	    var ku_list;
+        for (var i in ku_name){
+            ku_list += "<option value='" + ku_name[i] + "'>" + ku_name[i] + "</option>";
+        }
+        document.getElementById("listKu").innerHTML = ku_list;
+    }
+
+    function clickSearch(){
+        var facility;
+  		var category;
+  		var word;
+  		ku  = encodeURIComponent(document.getElementById("listKu").value);
+  		var param = "ku="+ku;
+  		location.href="./result.html?"+param;
+	}
 	//
 	//-----第１段階　トップページでクリックした区の区名とcsv,geojsonのファイル名
 	//区名、マップ中心表示のための緯度経度パラメーターを前ページから受け取り、パースする処理
