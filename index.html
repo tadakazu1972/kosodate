@@ -2,7 +2,7 @@
   <head>
 	<!--スマホレイアウトの調整つくまではviewport設定を無効にしておく-->
 	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
-	<title>大阪市子育て情報</title>
+	<title>大阪市子育て情報(検診・予防接種)</title>
 	<meta charset="utf-8">
 	<!--d3.js v6を採用しようとしたが、IE11はv4しか対応していない-->
 	<script src="https://d3js.org/d3.v4.min.js"></script>
@@ -226,6 +226,21 @@
 	var chome_old = "";
 	var banchi_old = "";
 	var gaiku_old = "";
+	//委託医療機関csvファイル読み込み（大阪市ホームページ　健康局がオープンデータとしてHPに設置している委託医療機関一覧のURLから）
+	var clinic_url="https://www.city.osaka.lg.jp/kenko/cmsfiles/contents/0000282/282789/26iryoukikanitiran.csv";  
+	//読み込んだ委託医療機関データの格納用変数
+	var clinic_data = [];
+    //CSV読み込み d3.jsでShift JISのCSVファイルを読み込む　https://qiita.com/_likr/items/d9b3d10e115c789719fa
+	d3.csv(clinic_url)
+	  .mimeType('text/csv; charset=shift_jis')
+	  .on('load', function(data){
+		data.forEach(function(element){
+			clinic_data.push(element);
+		})
+	  })
+	  .get();
+	  console.log(clinic_data); //確認
+
 	//年齢　月齢　制度　項目　nullなのか、データが入っているのかで、８パターン判別してアコーディオン生成する
 	//データの仕様:　1:４つともnull ~ 8:全部データあり *0スタートではないことに留意
 	var pattern = 8; //デフォルトは以前までのデータ全部あり想定だったコーディングを想定して8とする。
@@ -374,9 +389,21 @@
 			e.stopPropagation();
 		})
 	}
+	/*
+	//委託医療機関　住所->Google Map検索　ボタン生成
+	var ku_btn=d3.select('body').append('div').attr('class', "ku_btn")
+	ku_btn.text("区役所地図")
+		  .on('click', function(d) {
+            // clickされたらgoogle mapで住所検索
+			window.location.href="https://www.google.co.jp/maps/place/"+address;
+		   });
+	*/
+
+
+
 	</script>
 	<!-- Sibulla tracking code start -->
-    <script type="text/javascript"><!--
+    <!--<script type="text/javascript"><!--
 	(function(){ var b = document.getElementsByTagName('script')[0],sib = document.createElement('script');
 	sib.type = 'text/javascript';sib.async = true;
 	sib.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'ma001.sibulla.com/dekatag/access?id=aGaskA6u';
