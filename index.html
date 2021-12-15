@@ -25,7 +25,7 @@
 			font-size: x-large;
 		}
 		body { font-family: "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif; }
-		h1,h2,h5,p { text-align: center; }
+		h1,h5 { text-align: center; }
 		svg { position:fixed; left:30%; border:1px; background-color: white; text-align:left; }
 		path { fill:white; stroke:black; stroke-width:0.25; }
 		.tooltip {
@@ -113,7 +113,7 @@
 		}
 		.accordion > ul > li  {
 			margin: 0 0 2px 0;
-			padding: 4px 0 0 4px;
+			padding: 12px 0px 0px 2px;
 			border-radius: 5px;
 			cursor: pointer;
 			background-color:#ffc753;
@@ -123,8 +123,8 @@
 			background-color:#ffd1d1;
 		}
 		.accordion > ul > li > ul > li  {
-			margin: 0 0 4px 0;
-			padding: 0 0 0 0;
+			margin: 8px 0 4px 0;
+			padding: 12px 0px 0px 0px;
 			border-radius: 5px;
 			cursor: pointer;
 			background:#c7b2de;
@@ -137,7 +137,7 @@
 		}
 		.accordion > ul > li > ul > li > ul > li {
 			margin: 0 0 4px 0;
-			padding: 0 0 0 0;
+			padding: 12px 0px 0px 0px;
 			border-radius: 5px;
 			cursor: pointer;
 			background:#cbf266;
@@ -150,13 +150,13 @@
 		}
 		#content {
 			margin: 0 0 0 0;
-			padding: 0 0 4px 0;
+			padding: 4px 0px 4px 0px;
 			border-radius: 0px;
 			background: white;
 		}
 		#content > li {
 			margin: 0 0 0 0;
-			padding: 0 0 4px 0;
+			padding: 4px 0px 4px 0px;
 			border-radius: 0px;
 			background: white;
 		}
@@ -346,13 +346,13 @@
 			switch (pattern){
 				//　月齢　なし　制度　あり　内容　あり　
 				case 1:
-					var $content = '<id="content">' + element.内容 + '<br>' + element.備考 + '</ul></li>';
+					var $content = '<id="content">' + element.内容 + '<br>' + '</ul></li>';
 					//ため込む
 					str = str + $town + $banchi + $gaiku + $content;
 					break;
 				//　月齢　あり　制度　あり　内容　あり　
 				case 8:
-					var $content = '<ul id="content">' + element.内容 + '<br>' + element.備考 + '</ul></li>';
+					var $content = '<ul id="content">' + element.内容 + '<br>' + '</ul></li>';
 					//ため込む
 					str = str + $town + $chome + $banchi + $gaiku + $content;
 					break;
@@ -406,12 +406,12 @@
 
 	</script>
 	<!-- Sibulla tracking code start -->
-    <!--<script type="text/javascript"><!--
+    <script type="text/javascript">
 	(function(){ var b = document.getElementsByTagName('script')[0],sib = document.createElement('script');
 	sib.type = 'text/javascript';sib.async = true;
 	sib.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'ma001.sibulla.com/dekatag/access?id=aGaskA6u';
 	b.parentNode.insertBefore(sib,b);}());
-	//--></script>
+	</script>
 	<!-- /Sibulla tracking code end -->	
   </body>
 </html>

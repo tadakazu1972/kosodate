@@ -212,18 +212,15 @@
 		<a href="https://www.city.osaka.lg.jp/index.html"><img src="osakacity_logo.png" alt="大阪市 OSAKA CITY"></a>
     </div>
 	<h1><div id="kuname"></div></h1>
-	<h2>項目を選択していただくと、子育てに関する情報が表示されます</h2>
-	<h2>お子様の年齢にあわせて健診や予防接種など各種情報をご確認ください</h2>
-	<p><a href="https://www.city.osaka.lg.jp/kurashi/category/3002-0-0-0-0-0-0-0-0-0.html">・大阪市ホームページ　子育て</a>　<a href="https://osaka-city.mamafre.jp/">・子育て応援サイト「すくすく」</a>　<a href="http://www.osaka-kosodate.net/">・大阪市24区子ども・子育てプラザ</a></p>
 	<div class="summary">
 		<p><div id="kuname2"></div></p>
 	</div>
 	<body onload="drawSearch()">
 		<div class="block">
-		  <div id="header">検索条件を設定</div>
-		  <p>
-		  区を選択<br>
-		  <select name="ku_selector" id="listKu"></select>
+		　<br><br>
+		  <h1><div id="header">委託医療機関　検索</div></h1>
+		  <h1>区を選択</h1>
+		  <h1><select name="ku_selector" id="listKu"></select></h1>
 		  <p>
 		  <button id="btnSearch" type="button" onclick="clickSearch()">検索</button>
 		</div>
@@ -236,7 +233,7 @@
 	<script>
 	function drawSearch(){
         //区のselect optionをセット
-        var ku_name = ["すべて","北区","都島区","福島区","此花区","中央区","西区","港区","大正区","天王寺区","浪速区","西淀川区","淀川区","東淀川区","東成区","生野区","旭区","城東区","鶴見区","阿倍野区","住之江区",,"住吉区","東住吉区","平野区","西成区"];
+        var ku_name = ["北区","都島区","福島区","此花区","中央区","西区","港区","大正区","天王寺区","浪速区","西淀川区","淀川区","東淀川区","東成区","生野区","旭区","城東区","鶴見区","阿倍野区","住之江区",,"住吉区","東住吉区","平野区","西成区"];
 	    var ku_list;
         for (var i in ku_name){
             ku_list += "<option value='" + ku_name[i] + "'>" + ku_name[i] + "</option>";
@@ -298,7 +295,7 @@
 		})
 	  })
 	  .get();
-	console.log(clinic_data); //確認
+	//console.log(clinic_data); //確認
 	//csvのヘッダー -> element.で使用
 	//№,名称,郵便番号,住所,方書,電話番号,市町村区分,ロタリックス,ロタテック,Ｈｉｂ,小児用肺炎球菌,Ｂ型肝炎,四種混合,MR,水痘,日本脳炎,二種混合,子宮頸がん,高齢者インフルエンザ,高齢者肺炎球菌,BCG
 
@@ -420,7 +417,7 @@
 					str = str + $town + $chome + $banchi + $gaiku + $content;
 			}
 		});
-		console.log(str);
+		//console.log(str);
 		//貼り付け
 		$('.accordion')
 			.append(str);

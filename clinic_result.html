@@ -212,14 +212,12 @@
 		<a href="https://www.city.osaka.lg.jp/index.html"><img src="osakacity_logo.png" alt="大阪市 OSAKA CITY"></a>
     </div>
 	<h1><div id="kuname"></div></h1>
-	<h2>項目を選択していただくと、子育てに関する情報が表示されます</h2>
-	<h2>お子様の年齢にあわせて健診や予防接種など各種情報をご確認ください</h2>
-	<p><a href="https://www.city.osaka.lg.jp/kurashi/category/3002-0-0-0-0-0-0-0-0-0.html">・大阪市ホームページ　子育て</a>　<a href="https://osaka-city.mamafre.jp/">・子育て応援サイト「すくすく」</a>　<a href="http://www.osaka-kosodate.net/">・大阪市24区子ども・子育てプラザ</a></p>
 	<div class="summary">
 		<p><div id="kuname2"></div></p>
 	</div>
 	<body onload="drawResult()">
-		  <div class="bar">選択区内　委託医療機関一覧</div>
+		  <h2><div class="bar">選択区内　委託医療機関一覧</div></h2>
+		  <h2>医療機関をタップすると住所の地図を表示します。</h2>
 		  <ul id="list" style="list-style:none;"></ul>
 		</div>
 	<!--<div id="department">
@@ -228,29 +226,7 @@
 		<h5>電話：０６−００００−００００</h5>
 	</div>-->
 	<script>
-		//グローバル
-		var clinicData = new Array(); //委託医療機関データ全て格納
-		//委託医療機関データクラス
-		//№,名称,郵便番号,住所,方書,電話番号,市町村区分,ロタリックス,ロタテック,Ｈｉｂ,小児用肺炎球菌,Ｂ型肝炎,四種混合,MR,水痘,日本脳炎,二種混合,子宮頸がん,高齢者インフルエンザ,高齢者肺炎球菌,BCG
-		function ClinicData(_id, _name, _zip, _address, _address2, _tel, _ku, _rotarix, _rotateq, _hib, _pcv13, _hepatitisB, _dpt-ipv, _mr, _chickenpox, _japaneseencephalitis, _dt2, _cervicalcancer, _elderlyinfluenza, _elderlypneumococcus, _bcg){
-  			this.id = _id;
-  			this.file = _file;
-  			this.facility = _facility;
-  			this.place = _place;
-  			this.name = _name;
-  			this.category = _category;
-  			this.top = _top;
-  			this.date = _date;
-  			this.time = _time;
-  			this.submit = _submit;
-  			this.fee = _fee;
-  			this.target = _target;
-  			this.station = _station;
-  			this.address = _address;
-  			this.tel = _tel;
-  			this.question = _question;
-  			this.etc = _etc;
-		}
+		
 
 		//施設描画
 function drawResult(){
@@ -267,193 +243,47 @@ function drawResult(){
     //キーと値の連想配列を生成
     key[keyName] = keyValue;
   }
-  var fromMonth = decodeURIComponent(key["fromMonth"]);
-  var fromDate  = decodeURIComponent(key["fromDate"]);
-  var toMonth   = decodeURIComponent(key["toMonth"]);
-  var toDate    = decodeURIComponent(key["toDate"]);
-  var facility  = decodeURIComponent(key["facility"]);
-  var category  = decodeURIComponent(key["category"]);
-  var word      = decodeURIComponent(key["freeword"]);
+  var kuname = decodeURIComponent(key["ku"]);
   var header = document.getElementById("header");
-  header.innerHTML = facility;
-  //イベント一覧のcsvファイル読み込み
-  var xhr = new XMLHttpRequest();
-  xhr.onload = function(){
-    //var container = document.getElementById("list"); //リスト描画タグ確保
-    var tempArray = xhr.responseText.split("\n");
-    /*
-    以前は以下の日付昇順ソートを使っていたが、data2017c.csvによって元データを日付昇順したデータを用いる
-    こととなったため、必要なくなり、実行スピードのほうを選択するためコメントアウトすることとする。
-    //とりあえず全データを日付昇順でバブルソート
-    csvArray2 = new Array();
-    csvArray3 = new Array();
-    tempArray2 = new Array();
-    var u,v;
-    for(u=0;u<tempArray.length-1;u++){
-      for(v=tempArray.length-1; v>u; v--){
-        //現時点のデータ取得
-        csvArray2 = tempArray[v].split(",");
-        var tempDate1Str = csvArray2[7].slice(0,-3); //開催日の文字列『１０/９（祝）」から「（祝）」を捨てる
-        var tempDate1Pair = tempDate1Str.split("/"); //"/"の文字で分割して配列にする
-        var tempDate1 = new Date(2017, tempDate1Pair[0]-1, tempDate1Pair[1]);
-        //１つ前のデータ取得
-        csvArray3 = tempArray[v-1].split(",");
-        var tempDate2Str = csvArray3[7].slice(0,-3); //開催日の文字列『１０/９（祝）」から「（祝）」を捨てる
-        var tempDate2Pair = tempDate2Str.split("/"); //"/"の文字で分割して配列にする
-        var tempDate2 = new Date(2017, tempDate2Pair[0]-1, tempDate2Pair[1]);
-        if ( tempDate2 > tempDate1 ) {
-          tempArray2 = tempArray[v];
-          tempArray[v] = tempArray[v-1];
-          tempArray[v-1] = tempArray2;
-        }
-      }
-    }*/
-    //ソート完了後
-    var csvArray = new Array();
-    for(var i=1;i<tempArray.length;i++){ //i=1はヘッダーを読み込ませないため
-      csvArray[i] = tempArray[i].split(",");
-      var data = csvArray[i];
-      //とりあえず読み込んだすべてのデータをDataクラスの配列に格納
-      eventData[i] = new EventData(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13],data[14],data[15],data[16]);
-      //日付処理:引き継いだパラメータから検索開始日と検索終了日をDate型でつくり、csvから開催日をDate型をつくり、比較させる
-      var date1 = new Date(2017, fromMonth-1, fromDate); //月は-1を忘れずに!!
-      var date2 = new Date(2017, toMonth-1, toDate);
-      var tempDateStr = data[7].slice(0,-3); //開催日の文字列『１０/９（祝）」から「（祝）」を捨てる
-      var tempDatePair = tempDateStr.split("/"); //"/"の文字で分割して配列にする
-      var date3 = new Date(2017, tempDatePair[0]-1, tempDatePair[1]); //これで開催日作成
-      //３つのDateを比較し、はさまれた開催日のみ表示
-      if (date1 <= date3){
-        if (date3 <= date2){
-          if (facility == "すべて"){
-            if (category == "すべて"){
-              if (word == ""){
-                var item = document.createElement("div");
-                item.className = "list";
-                item.style.border = "solid";
-                if (window.innerWidth >= 640){
-                  item.style.width = "630px";
-                }
-                item.style.margin = "auto";
-                item.style.padding = "4px";
-                item.style.cursor = "pointer";
-                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
-                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
-                document.body.appendChild(item);
-              } else if (tempArray[i].match(word)){
-                var item = document.createElement("div");
-                item.className = "list";
-                item.style.border = "solid";
-                if (window.innerWidth >= 640){
-                  item.style.width = "630px";
-                }
-                item.style.margin = "auto";
-                item.style.padding = "4px";
-                item.style.cursor = "pointer";
-                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
-                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
-                document.body.appendChild(item);
-              };
-            } else if (category == data[5]){
-              if (word == ""){
-                var item = document.createElement("div");
-                item.className = "list";
-                item.style.border = "solid";
-                if (window.innerWidth >= 640){
-                  item.style.width = "630px";
-                }
-                item.style.margin = "auto";
-                item.style.padding = "4px";
-                item.style.cursor = "pointer";
-                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
-                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
-                document.body.appendChild(item);
-              } else if (tempArray[i].match(word)){
-                var item = document.createElement("div");
-                item.className = "list";
-                item.style.border = "solid";
-                if (window.innerWidth >= 640){
-                  item.style.width = "630px";
-                }
-                item.style.margin = "auto";
-                item.style.padding = "4px";
-                item.style.cursor = "pointer";
-                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
-                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
-                document.body.appendChild(item);
-              };
-            };
-          } else if (facility == data[2]){
-            if (category == "すべて"){
-              if (word == ""){
-                var item = document.createElement("div");
-                item.className = "list";
-                item.style.border = "solid";
-                if (window.innerWidth >= 640){
-                  item.style.width = "630px";
-                }
-                item.style.margin = "auto";
-                item.style.padding = "4px";
-                item.style.cursor = "pointer";
-                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
-                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
-                document.body.appendChild(item);
-              } else if (tempArray[i].match(word)){
-                var item = document.createElement("div");
-                item.className = "list";
-                item.style.border = "solid";
-                if (window.innerWidth >= 640){
-                  item.style.width = "630px";
-                }
-                item.style.margin = "auto";
-                item.style.padding = "4px";
-                item.style.cursor = "pointer";
-                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
-                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
-                document.body.appendChild(item);
-              };
-            } else if (category == data[5]){
-              if (word == ""){
-                var item = document.createElement("div");
-                item.className = "list";
-                item.style.border = "solid";
-                if (window.innerWidth >= 640){
-                  item.style.width = "630px";
-                }
-                item.style.margin = "auto";
-                item.style.padding = "4px";
-                item.style.cursor = "pointer";
-                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
-                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
-                document.body.appendChild(item);
-              } else if (tempArray[i].match(word)){
-                var item = document.createElement("div");
-                item.className = "list";
-                item.style.border = "solid";
-                if (window.innerWidth >= 640){
-                  item.style.width = "630px";
-                }
-                item.style.margin = "auto";
-                item.style.padding = "4px";
-                item.style.cursor = "pointer";
-                item.innerHTML = "<b>"+data[7]+"  "+data[4]+"</b><br>"+eventData[i].top;
-                item.onclick = (function(num){ return function(){ clickList(num); };})(i);
-                document.body.appendChild(item);
-              };
-            };
-          };
-        };
-      };
-    };
-  };
-  xhr.open("get", "data2017c.csv", true);
-  xhr.send(null);
-}
+  //header.innerHTML = facility;
+  //委託医療機関csvファイル読み込み（大阪市ホームページ　健康局がオープンデータとしてHPに設置している委託医療機関一覧のURLから）
+	var clinic_url="https://www.city.osaka.lg.jp/kenko/cmsfiles/contents/0000282/282789/26iryoukikanitiran.csv";  
+	//読み込んだ委託医療機関データの格納用変数
+	var clinic_data = [];
+    //CSV読み込み d3.jsでShift JISのCSVファイルを読み込む　https://qiita.com/_likr/items/d9b3d10e115c789719fa
+	//csvのヘッダー -> element.で使用
+	//№,名称,郵便番号,住所,方書,電話番号,市町村区分,ロタリックス,ロタテック,Ｈｉｂ,小児用肺炎球菌,Ｂ型肝炎,四種混合,MR,水痘,日本脳炎,二種混合,子宮頸がん,高齢者インフルエンザ,高齢者肺炎球菌,BCG
+	d3.csv(clinic_url)
+	  .mimeType('text/csv; charset=shift_jis')
+	  .on('load', function(data){
+		data.forEach(function(element){
+			if (element.市町村区分.match(kuname)){
+				clinic_data.push(element);
 
-function clickList(num){
-  //window.confirm("id:"+num+"がクリックされた");
-  var _id = encodeURIComponent(eventData[num].id);
-  var param = "id="+_id;
-  location.href = "./event.html?"+param;
+				var item = document.createElement("div");
+                item.className = "list";
+                item.style.border = "solid";
+                if (window.innerWidth >= 640){
+                  item.style.width = "630px";
+                }
+                item.style.margin = "auto";
+                item.style.padding = "4px";
+                item.style.cursor = "pointer";
+                item.innerHTML = "<b>"+element.名称+"</b><br>住所: "+element.住所+"　"+element.方書+" 電話:"+element.電話番号+"<br>ロタリックス:"+element.ロタリックス+"  ロタテック:"+element.ロタテック;
+				var address = element.住所;
+                item.onclick = (function(address){ return function(){ clickList(address); };})(address);
+                document.body.appendChild(item);
+			}
+			//clinic_data.push(element);
+		})
+	  })
+	  .get();
+	console.log(clinic_data); //確認
+}
+	
+function clickList(_address){
+  //window.confirm("id:"+_address+"がクリックされた");
+  window.location.href="https://www.google.co.jp/maps/place/"+_address;
 }
 
 
@@ -511,152 +341,8 @@ function clickList(num){
 	var banchi_old = "";
 	var gaiku_old = "";
 	//委託医療機関csvファイル読み込み（大阪市ホームページ　健康局がオープンデータとしてHPに設置している委託医療機関一覧のURLから）
-	var clinic_url="https://www.city.osaka.lg.jp/kenko/cmsfiles/contents/0000282/282789/26iryoukikanitiran.csv";  
-	//読み込んだ委託医療機関データの格納用変数
-	var clinic_data = [];
-    //CSV読み込み d3.jsでShift JISのCSVファイルを読み込む　https://qiita.com/_likr/items/d9b3d10e115c789719fa
-	d3.csv(clinic_url)
-	  .mimeType('text/csv; charset=shift_jis')
-	  .on('load', function(data){
-		data.forEach(function(element){
-			clinic_data.push(element);
-		})
-	  })
-	  .get();
-	console.log(clinic_data); //確認
-	//csvのヘッダー -> element.で使用
-	//№,名称,郵便番号,住所,方書,電話番号,市町村区分,ロタリックス,ロタテック,Ｈｉｂ,小児用肺炎球菌,Ｂ型肝炎,四種混合,MR,水痘,日本脳炎,二種混合,子宮頸がん,高齢者インフルエンザ,高齢者肺炎球菌,BCG
 
-
-	//年齢　月齢　制度　項目　nullなのか、データが入っているのかで、８パターン判別してアコーディオン生成する
-	//データの仕様:　1:４つともnull ~ 8:全部データあり *0スタートではないことに留意
-	var pattern = 8; //デフォルトは以前までのデータ全部あり想定だったコーディングを想定して8とする。
-	d3.csv(csvfile, function(data){
-		//console.log(data);
-		//csvdataに格納
-		data.forEach(function(element){
-			//console.log(element);
-			csvdata.push(element);
-			//アコーディオンに書き込み
-			//年齢
-			var isNextTown = false;
-			if (town_old === ""){
-				town_old = element.年齢;
-				var $town = '<div class="town"><h3>'+element.年齢+'</h3></div><ul>';
-			} else if (town_old != element.年齢){
-				town_old = element.年齢;
-				switch (pattern){
-					case 1:
-						var $town = '</ul><div class="town"><h3>'+element.年齢+'</h3></div><ul>';
-						pattern = 8; //デフォに戻すこと忘れないように
-						break;
-					case 2:
-						var $town = '</ul></li></ul><div class="town"><h3>'+element.年齢+'</h3></div><ul>';
-						pattern = 8; //デフォに戻すこと忘れないように
-						break;
-					case 8:
-						var $town = '</ul></li></ul></ul><div class="town"><h3>'+element.年齢+'</h3></div><ul>';
-						break;
-					default:
-						var $town = '</ul></li></ul></ul><div class="town"><h3>'+element.年齢+'</h3></div><ul>';
-				}				
-				isNextTown = true;
-			} else {
-				var $town = "";
-			}
-			//console.log($town);
-			//月齢
-			var isNextChome = false;
-			if (chome_old === ""){
-				chome_old = element.月齢;
-				var $chome = '<li>'+chome_old+'<ul>';
-			} else if (chome_old != element.月齢){
-				chome_old = element.月齢 === "" ? "▼" : element.月齢;
-				if (isNextTown) {
-					var $chome = '<li>'+chome_old+'<ul>';
-				} else {
-					switch (pattern){
-						//月齢 なし
-						case 1:
-							var $chome = '</ul></li><li>'+element.月齢+'<ul>';
-							pattern = 8; //デフォに戻すこと忘れないように
-							break;
-						case 8:
-							var $chome = '</ul></li></ul><li>'+element.月齢+'<ul>';
-							break;
-						default:
-							var $chome = '</ul></li></ul><li>'+element.月齢+'<ul>';
-					}
-				}
-				isNextChome = true;
-			} else 	if (isNextTown) {
-					var $chome = '<li>'+element.月齢+'<ul>';
-			} else {
-				var $chome = "";
-			}
-			//console.log($chome);
-			//制度
-			if (banchi_old === ""){
-				banchi_old = element.制度 === "" ? "▼" : element.制度;
-				var $banchi = element.制度 === "" ? '<li>▼<ul>' : '<li>'+element.制度+'<ul>';
-			} else if (banchi_old != element.制度){
-						banchi_old = element.制度 === "" ? "▼" : element.制度;
-						if (isNextChome) {
-							var $banchi = element.制度 === "" ? '<li>▼<ul>' : '<li>'+element.制度+'<ul>';
-						} else {
-							var $banchi = element.制度 === "" ? '</ul></li><li>▼<ul>' : '</ul></li><li>'+element.制度+'<ul>';
-						}
-			} else if (isNextChome){
-				var $banchi = element.制度 === "" ? '<li>▼<ul>' : '<li>'+element.制度+'<ul>';
-			} else {
-				var $banchi = "";
-			}
-			//console.log($banchi);
-			//項目
-			if (element.項目===""){ 
-				var $gaiku = '<li>'+"▼";
-			} else {
-				var $gaiku = '<li>'+element.項目;
-			}
-
-			//月齢　なし
-			if (element.月齢 == ""){
-				pattern = 1;
-			} else {
-				pattern = 8;
-			}
-
-			//情報　結合
-			switch (pattern){
-				//　月齢　なし　制度　あり　内容　あり　
-				case 1:
-					var $content = '<id="content">' + element.内容 + '<br>' + element.備考 + '</ul></li>';
-					//ため込む
-					str = str + $town + $banchi + $gaiku + $content;
-					break;
-				//　月齢　あり　制度　あり　内容　あり　
-				case 8:
-					var $content = '<ul id="content">' + element.内容 + '<br>' + element.備考 + '</ul></li>';
-					//ため込む
-					str = str + $town + $chome + $banchi + $gaiku + $content;
-					break;
-				default:
-					//ため込む
-					str = str + $town + $chome + $banchi + $gaiku + $content;
-			}
-		});
-		console.log(str);
-		//貼り付け
-		$('.accordion')
-			.append(str);
-		addClickEvents();
-	});
 	
-	//地図なし　チェックボックスを押すと地図なしcssのkumap5.htmlに遷移
-	function displayMap(){
-		window.location.href="kumap20.html?ku="+ku+"&file="+file;
-	}
-
 	//24区選択画面に戻る
 	function backIndex(){
 		window.location.href="index.html";
