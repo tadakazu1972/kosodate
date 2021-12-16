@@ -160,6 +160,11 @@
 			border-radius: 0px;
 			background: white;
 		}
+		#listKu {
+			min-width: 100px;
+			min-height: 32px;
+			margin: 20px 13%;
+		}
 		
 		/*RESPONSIVE: スマートフォン ウィンドウ幅600px以下*/
 		@media screen and (max-width:600px) {
@@ -178,22 +183,22 @@
 	<div id="logo">
 		<a href="https://www.city.osaka.lg.jp/index.html"><img src="osakacity_logo.png" alt="大阪市 OSAKA CITY"></a>
     </div>
-	<h1>大阪市　各種予防接種委託医療機関　検索</h1>
+	<h5>各種予防接種委託医療機関　検索</h5>
 	<div class="summary">
 		<p><div id="kuname2"></div></p>
 	</div>
 	<body onload="drawSearch()">
 		<div class="block">
 		　<br>
-		  <h2>大阪市ホームページ<a href="https://www.city.osaka.lg.jp/kenko/page/0000282789.html">「各種予防接種委託医療機関について」</a>に掲載の</h2>
-		  <h2>「委託医療機関一覧（オープンデータ）」から検索します</h2>
+		  <h4>大阪市ホームページ<a href="https://www.city.osaka.lg.jp/kenko/page/0000282789.html">「各種予防接種委託医療機関について」</a>に掲載の「委託医療機関一覧（オープンデータ）」から検索します。</h4>
 		　<br>
-		  <h1>区を選択して検索ボタンを押してください</h1>
+		  <h1>区を選択して</h1>
+		  <h1>検索ボタンを押してください</h1>
 		  <h1><select name="ku_selector" id="listKu"></select><button type="button" onclick="clickSearch()">検索</button></h1>
 		  <!-- <button id="btnSearch" type="button" onclick="clickSearch()">検索</button> -->
 		  <br>
-		  <h2><div id="message_jumpgooglemap"></div></h2>
-		  <h2><div id="message_vaccination"></div></h2>
+		  <h5><div id="message_jumpgooglemap"></div></h5>
+		  <h5><div id="message_vaccination"></div></h5>
 		  <div id="clinic_list"></div>
 		</div>
 		</body>
@@ -222,8 +227,8 @@
 		}
 		kuname = document.getElementById("listKu").value;
 		//メッセージ表示
-		document.getElementById("message_jumpgooglemap").innerHTML = "医療機関をタップすると住所の地図を表示します。";
-		document.getElementById("message_vaccination").innerHTML = "種別:〇がワクチン取り扱いあり";
+		document.getElementById("message_jumpgooglemap").innerHTML = "タップすると記載住所の地図を表示します";
+		document.getElementById("message_vaccination").innerHTML = "種別:〇が取り扱いあり";
 		//委託医療機関csvファイル読み込み（大阪市ホームページ　健康局がオープンデータとしてHPに設置している委託医療機関一覧のURLから）
 		var clinic_url="https://www.city.osaka.lg.jp/kenko/cmsfiles/contents/0000282/282789/26iryoukikanitiran.csv";  
 		//読み込んだ委託医療機関データの格納用変数
