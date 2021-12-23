@@ -251,7 +251,9 @@
 	//年齢　月齢　制度　項目　nullなのか、データが入っているのかで、８パターン判別してアコーディオン生成する
 	//データの仕様:　1:４つともnull ~ 8:全部データあり *0スタートではないことに留意
 	var pattern = 8; //デフォルトは以前までのデータ全部あり想定だったコーディングを想定して8とする。
-	d3.csv(csvfile, function(data){
+	d3.csv(csvfile)
+	  .mimeType('text/csv; charset=shift_jis')
+	  .on('load', function(data){
 		//console.log(data);
 		//csvdataに格納
 		data.forEach(function(element){
@@ -370,7 +372,8 @@
 		$('.accordion')
 			.append(str);
 		addClickEvents();
-	});
+	})
+	.get();
 	
 	//地図なし　チェックボックスを押すと地図なしcssのkumap5.htmlに遷移
 	function displayMap(){

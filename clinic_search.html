@@ -193,9 +193,12 @@
 		　<br>
 		  <h4>大阪市ホームページ<a href="https://www.city.osaka.lg.jp/kenko/page/0000282789.html">「各種予防接種委託医療機関について」</a>に掲載の「委託医療機関一覧（オープンデータ）」のうち、乳幼児期・就学後に受ける予防接種を取り扱う委託医療機関を検索します。</h4>
 		  <h4>※高齢者インフルエンザ、高齢者肺炎球菌のみ取扱の委託医療機関は表示されません。</h4>
+		  <br>
+		  <h1>検索する予防接種：<div id="selected_vaccination"></div></h1>
 		　<br>
-		  <h1>区を選択して</h1>
+		  <h1>区・市外を選択して</h1>
 		  <h1>検索ボタンを押してください</h1>
+		  <h5><a href="https://www.city.osaka.lg.jp/kenko/page/0000224304.html">里帰り時(大阪市外の医療機関で定期接種を受ける場合について)</a></h5>
 		  <h1><select name="ku_selector" id="listKu"></select><button type="button" onclick="clickSearch()">検索</button></h1>
 		  <!-- <button id="btnSearch" type="button" onclick="clickSearch()">検索</button> -->
 		  <br>
@@ -210,8 +213,27 @@
 		<h5>電話：０６−００００−００００</h5>
 	</div>-->
 	<script>
-
+	//-----第１段階　トップページでクリックした予防接種
+	//予防接種の番号を前ページから受け取り、パースする処理
+	var param = location.search; // アドレスの「?」以降の引数(パラメータ)を取得
+	param = param.substring(1); //先頭の?をカット
+	var pair = param.split("&"); //&で引数を分割
+	var temp = "";
+	var key = new Array();
+	for (var i=0;i<pair.length;i++){
+		temp = pair[i].split("="); //配列を=で分割
+		keyName = temp[0];
+		keyValue = temp[1];
+		//キーと値の連想配列を生成
+		key[keyName] = keyValue;
+	}
+	var v_index = decodeURIComponent(key["v_index"]);
+	var v_name = ["ロタリックス","ロタテック","ヒブ","小児用肺炎球菌","B型肝炎","４種混合","麻しん風しん(MR)","水痘","日本脳炎","２種混合","子宮頸がん","高齢者インフルエンザ","高齢者肺炎球菌","BCG"];
+	
 	function drawSearch(){
+		//前ページで選択された予防接種名を埋め込み
+		document.getElementById("selected_vaccination").innerHTML = v_name[v_index];
+
         //区のselect optionをセット
         var ku_name = ["北区","都島区","福島区","此花区","中央区","西区","港区","大正区","天王寺区","浪速区","西淀川区","淀川区","東淀川区","東成区","生野区","旭区","城東区","鶴見区","阿倍野区","住之江区",,"住吉区","東住吉区","平野区","西成区","市外"];
 	    var ku_list;
@@ -244,7 +266,7 @@
 			data.forEach(function(element){
 				if (element.市町村区分.match(kuname)){
 					//clinic_data.push(element);
-					console.log(element);
+					//console.log(element);
 					var vaccination = [];
 					vaccination[0] = element.ロタリックス === "" ? "" : "ﾛﾀﾘｯｸｽ:"+element.ロタリックス;
 					vaccination[1] = element.ロタテック === "" ? "" : "  ﾛﾀﾃｯｸ:"+element.ロタテック;
@@ -260,6 +282,25 @@
 					vaccination[11] = element.高齢者インフルエンザ === "" ? "" : "  高齢者ｲﾝﾌﾙｴﾝｻﾞ:"+element.高齢者インフルエンザ;
 					vaccination[12] = element.高齢者肺炎球菌 === "" ? "" : "  高齢者肺炎球菌:"+element.高齢者肺炎球菌;
 					vaccination[13] = element.BCG === "" ? "" : "  BCG:"+element.BCG;
+					//高齢者インフルエンザ、高齢者肺炎球菌のみの委託医療機関は掲載しない
+					if (vaccination[v_index]!=""){
+						//表示
+						var item = document.createElement("div");
+						item.id = "clinic";
+						item.style.border = "solid";
+						if (window.innerWidth >= 640){
+						item.style.width = "630px";
+						}
+						item.style.margin = "auto";
+						item.style.padding = "4px";
+						item.style.cursor = "pointer";
+						item.innerHTML = "<b>"+element.名称+"</b><br>住所: "+element.住所+"　"+element.方書+" 電話:"+element.電話番号+"<br>"+vaccination[0]+vaccination[1]+vaccination[2]+vaccination[3]+vaccination[4]+vaccination[5]+vaccination[6]+vaccination[7]+vaccination[8]+vaccination[9]+vaccination[10]+vaccination[11]+vaccination[12]+vaccination[13];
+						var address = element.住所;
+						item.onclick = (function(address){ return function(){ clickList(address); };})(address);
+						var parent = document.getElementById("clinic_list");
+						parent.appendChild(item);
+					}
+					/*
 					//高齢者インフルエンザ、高齢者肺炎球菌のみの委託医療機関は掲載しない
 					if (vaccination[0]!=""||vaccination[1]!=""||vaccination[2]!=""||vaccination[3]!=""||vaccination[4]!=""||vaccination[5]!=""||vaccination[6]!=""||vaccination[7]!=""||vaccination[8]!=""||vaccination[9]!=""||vaccination[10]!=""||vaccination[13]!=""){
 						//表示
@@ -277,7 +318,7 @@
 						item.onclick = (function(address){ return function(){ clickList(address); };})(address);
 						var parent = document.getElementById("clinic_list");
 						parent.appendChild(item);
-					}
+					}*/
 				}
 				//clinic_data.push(element);
 			})
