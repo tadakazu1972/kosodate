@@ -183,14 +183,16 @@
 	<div id="logo">
 		<a href="https://www.city.osaka.lg.jp/index.html"><img src="osakacity_logo.png" alt="大阪市 OSAKA CITY"></a>
     </div>
-	<h5>各種予防接種委託医療機関　検索</h5>
+	<h5>乳幼児期・就学後予防接種</h5>
+	<h5>委託医療機関　検索</h5>
 	<div class="summary">
 		<p><div id="kuname2"></div></p>
 	</div>
 	<body onload="drawSearch()">
 		<div class="block">
 		　<br>
-		  <h4>大阪市ホームページ<a href="https://www.city.osaka.lg.jp/kenko/page/0000282789.html">「各種予防接種委託医療機関について」</a>に掲載の「委託医療機関一覧（オープンデータ）」から検索します。</h4>
+		  <h4>大阪市ホームページ<a href="https://www.city.osaka.lg.jp/kenko/page/0000282789.html">「各種予防接種委託医療機関について」</a>に掲載の「委託医療機関一覧（オープンデータ）」のうち、乳幼児期・就学後に受ける予防接種を取り扱う委託医療機関を検索します。</h4>
+		  <h4>※高齢者インフルエンザ、高齢者肺炎球菌のみ取扱の委託医療機関は表示されません。</h4>
 		　<br>
 		  <h1>区を選択して</h1>
 		  <h1>検索ボタンを押してください</h1>
@@ -211,7 +213,7 @@
 
 	function drawSearch(){
         //区のselect optionをセット
-        var ku_name = ["北区","都島区","福島区","此花区","中央区","西区","港区","大正区","天王寺区","浪速区","西淀川区","淀川区","東淀川区","東成区","生野区","旭区","城東区","鶴見区","阿倍野区","住之江区",,"住吉区","東住吉区","平野区","西成区"];
+        var ku_name = ["北区","都島区","福島区","此花区","中央区","西区","港区","大正区","天王寺区","浪速区","西淀川区","淀川区","東淀川区","東成区","生野区","旭区","城東区","鶴見区","阿倍野区","住之江区",,"住吉区","東住吉区","平野区","西成区","市外"];
 	    var ku_list;
         for (var i in ku_name){
             ku_list += "<option value='" + ku_name[i] + "'>" + ku_name[i] + "</option>";
@@ -242,20 +244,40 @@
 			data.forEach(function(element){
 				if (element.市町村区分.match(kuname)){
 					//clinic_data.push(element);
-					var item = document.createElement("div");
-					item.id = "clinic";
-    	            item.style.border = "solid";
-        	        if (window.innerWidth >= 640){
-            	      item.style.width = "630px";
-                	}
-                	item.style.margin = "auto";
-                	item.style.padding = "4px";
-                	item.style.cursor = "pointer";
-                	item.innerHTML = "<b>"+element.名称+"</b><br>住所: "+element.住所+"　"+element.方書+" 電話:"+element.電話番号+"<br>ﾛﾀﾘｯｸｽ:"+element.ロタリックス+"  ﾛﾀﾃｯｸ:"+element.ロタテック+"  ﾋﾌﾞ:"+element.Ｈｉｂ+"  小児用肺炎球菌:"+element.小児用肺炎球菌+"  B型肝炎:"+element.Ｂ型肝炎+"  四種混合:"+element.四種混合+"  麻疹風疹MR:"+element.MR+"  水痘:"+element.水痘+"  日本脳炎:"+element.日本脳炎+"  二種混合:"+element.二種混合+"  子宮頸がん:"+element.子宮頸がん+"  高齢者ｲﾝﾌﾙｴﾝｻﾞ:"+element.高齢者インフルエンザ+"  高齢者肺炎球菌:"+element.高齢者肺炎球菌+"  BCG:"+element.BCG;
-					var address = element.住所;
-                	item.onclick = (function(address){ return function(){ clickList(address); };})(address);
-					var parent = document.getElementById("clinic_list");
-					parent.appendChild(item);
+					console.log(element);
+					var vaccination = [];
+					vaccination[0] = element.ロタリックス === "" ? "" : "ﾛﾀﾘｯｸｽ:"+element.ロタリックス;
+					vaccination[1] = element.ロタテック === "" ? "" : "  ﾛﾀﾃｯｸ:"+element.ロタテック;
+					vaccination[2] = element.Ｈｉｂ === "" ? "" : "  ﾋﾌﾞ:"+element.Ｈｉｂ;
+					vaccination[3] = element.小児用肺炎球菌 === "" ? "" : "  小児用肺炎球菌:"+element.小児用肺炎球菌;
+					vaccination[4] = element.Ｂ型肝炎 === "" ? "" : "  B型肝炎:"+element.Ｂ型肝炎;
+					vaccination[5] = element.四種混合 === "" ? "" : "  四種混合:"+element.四種混合;
+					vaccination[6] = element.MR === "" ? "" : "  麻疹風疹MR:"+element.MR;
+					vaccination[7] = element.水痘 === "" ? "" : "  水痘:"+element.水痘;
+					vaccination[8] = element.日本脳炎 === "" ? "" : "  日本脳炎:"+element.日本脳炎;
+					vaccination[9] = element.二種混合 === "" ? "" : "  二種混合:"+element.二種混合;
+					vaccination[10] = element.子宮頸がん === "" ? "" : "  子宮頸がん:"+element.子宮頸がん;
+					vaccination[11] = element.高齢者インフルエンザ === "" ? "" : "  高齢者ｲﾝﾌﾙｴﾝｻﾞ:"+element.高齢者インフルエンザ;
+					vaccination[12] = element.高齢者肺炎球菌 === "" ? "" : "  高齢者肺炎球菌:"+element.高齢者肺炎球菌;
+					vaccination[13] = element.BCG === "" ? "" : "  BCG:"+element.BCG;
+					//高齢者インフルエンザ、高齢者肺炎球菌のみの委託医療機関は掲載しない
+					if (vaccination[0]!=""||vaccination[1]!=""||vaccination[2]!=""||vaccination[3]!=""||vaccination[4]!=""||vaccination[5]!=""||vaccination[6]!=""||vaccination[7]!=""||vaccination[8]!=""||vaccination[9]!=""||vaccination[10]!=""||vaccination[13]!=""){
+						//表示
+						var item = document.createElement("div");
+						item.id = "clinic";
+						item.style.border = "solid";
+						if (window.innerWidth >= 640){
+						item.style.width = "630px";
+						}
+						item.style.margin = "auto";
+						item.style.padding = "4px";
+						item.style.cursor = "pointer";
+						item.innerHTML = "<b>"+element.名称+"</b><br>住所: "+element.住所+"　"+element.方書+" 電話:"+element.電話番号+"<br>"+vaccination[0]+vaccination[1]+vaccination[2]+vaccination[3]+vaccination[4]+vaccination[5]+vaccination[6]+vaccination[7]+vaccination[8]+vaccination[9]+vaccination[10]+vaccination[11]+vaccination[12]+vaccination[13];
+						var address = element.住所;
+						item.onclick = (function(address){ return function(){ clickList(address); };})(address);
+						var parent = document.getElementById("clinic_list");
+						parent.appendChild(item);
+					}
 				}
 				//clinic_data.push(element);
 			})
