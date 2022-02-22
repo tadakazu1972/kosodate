@@ -243,7 +243,7 @@
 		})
 	  })
 	  .get();
-	console.log(vaccine_data); //確認
+	//console.log(vaccine_data); //確認
 
 	//年齢　月齢　制度　項目　nullなのか、データが入っているのかで、８パターン判別してアコーディオン生成する
 	//データの仕様:　1:４つともnull ~ 8:全部データあり *0スタートではないことに留意
@@ -369,14 +369,18 @@
 							console.log(num);
 						}
 						//先に読み込んでおいたteikiyobousesshu.csvのデータを格納したvaccine_dataの番号とnumをマッチングしたレコードを抽出
-						var result = vaccine_data.filter(el => el.番号 == num);
+						var result = vaccine_data.filter(el => el.番号 === num);
+						/*result = vaccine_data.filter(function(v) {
+							return v.番号 === num;
+						});*/
 						//原因不明だがたまにfilterがコケてresultが空の時があるのでその場合は再検索
 						if (result.length < 1){
 							console.log(result);
 							console.log("find again!");
 							result = vaccine_data.filter(el => el.番号 == num);
 						}
-						var vaccine_info = "■対象年齢<br>　" + result.対象年齢 + "<br>■標準的な接種年齢<br>　" + result.標準的な接種年齢 + "<br>■接種回数<br>　" + result.接種回数 + "<br>■接種間隔<br>　" + result.接種間隔 + "<br>■備考<br>　" + result.備考 + "<br>■委託医療機関<br>　" + result.委託医療機関 + "<br>■疾患別情報<br>　" +result.疾患別情報;
+						//filter関数の結果は複数帰ってくるので、その先頭であるresult[0]の[0]が必須!!
+						var vaccine_info = "■対象年齢<br>　" + result[0].対象年齢 + "<br>■標準的な接種年齢<br>　" + result[0].標準的な接種年齢 + "<br>■接種回数<br>　" + result[0].接種回数 + "<br>■接種間隔<br>　" + result[0].接種間隔 + "<br>■備考<br>　" + result[0].備考 + "<br>■委託医療機関<br>　" + result[0].委託医療機関 + "<br>■疾患別情報<br>　" +result[0].疾患別情報;
 						var $content =  '<ul id="content">' + vaccine_info + '<br>' + '</ul></li>';						
 					} else {
 						//予防接種以外の場合は、内容に書かれている記述をそのまま採用する
