@@ -402,6 +402,16 @@
 		addClickEvents();
 	})
 	.get();
+	
+	//地図なし　チェックボックスを押すと地図なしcssのkumap5.htmlに遷移
+	function displayMap(){
+		window.location.href="kumap20.html?ku="+ku+"&file="+file;
+	}
+
+	//24区選択画面に戻る
+	function backIndex(){
+		window.location.href="index.html";
+	}
 
 	//町丁目　街区名をクリックすると表示するアコーディオン生成
 	function addClickEvents(){
