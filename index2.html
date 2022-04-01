@@ -235,7 +235,7 @@
 	var result = []; //vaccine_dataからfind番号でマッチングした列情報を格納する
 	//CSV読み込み d3.jsでShift JISのCSVファイルを読み込む　https://qiita.com/_likr/items/d9b3d10e115c789719fa
 	var filename = "teikiyobousesshu.csv?time="+new Date().getTime();
-	d3.csv(filename)
+		d3.csv(filename)
 	  .mimeType('text/csv; charset=shift_jis')
 	  .on('load', function(data){
 		data.forEach(function(element){
@@ -243,7 +243,7 @@
 		})
 	  })
 	  .get();
-	//console.log(vaccine_data); //確認
+	console.log(vaccine_data); //確認
 
 	//年齢　月齢　制度　項目　nullなのか、データが入っているのかで、８パターン判別してアコーディオン生成する
 	//データの仕様:　1:４つともnull ~ 8:全部データあり *0スタートではないことに留意
