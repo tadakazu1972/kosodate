@@ -235,8 +235,25 @@
 	var vaccine_data = [];
 	var result = []; //vaccine_dataからfind番号でマッチングした列情報を格納する
 	//CSV読み込み d3.jsでShift JISのCSVファイルを読み込む　https://qiita.com/_likr/items/d9b3d10e115c789719fa
-	var filename = "teikiyobousesshu.csv?time="+new Date().getTime();
-		d3.csv(filename)
+	var filename = "https://www.city.osaka.lg.jp/kenko/cmsfiles/contents/0000282/282789/teikiyobousesshu.csv?time="+new Date().getTime();
+	var csvData = new Array();
+	var xhr  = new XMLHttpRequest();
+	xhr.open("GET", filename, false);
+	xhr.overrideMimeType('text/plain; charset=shift_JIS');
+	xhr.send(null);
+	var CR = String.fromCharCode(13)
+	var LF = String.fromCharCode(10);
+	var lines = xhr.responseText.split(CR+LF);
+	//ヘッダーを読んでしまうのでi=1に注意
+	for (var i= 1; i < lines.length; i++){
+		var cells = lines[i].split(",");
+		if ( cells.length != 1){
+			vaccine_data.push(cells);
+		}
+	}
+	//console.log(vaccine_data);
+	//var filename = "teikiyobousesshu.csv?time="+new Date().getTime();
+	/*d3.csv(filename)
 	  .mimeType('text/csv; charset=shift_jis')
 	  .on('load', function(data){
 		data.forEach(function(element){
@@ -244,7 +261,7 @@
 		})
 	  })
 	  .get();
-	console.log(vaccine_data); //確認
+	console.log(vaccine_data); //確認*/
 
 	//年齢　月齢　制度　項目　nullなのか、データが入っているのかで、８パターン判別してアコーディオン生成する
 	//データの仕様:　1:４つともnull ~ 8:全部データあり *0スタートではないことに留意
@@ -354,7 +371,8 @@
 					//ため込む
 					str = str + $town + $banchi + $gaiku + $content;
 					break;
-				//　月齢　あり　制度　あり　内容　あり　
+				//　月齢　あり　制度　あり　内容　あり
+				
 				case 8:
 					//予防接種の場合、内容欄の番号とあらかじめ読み込んだ予防接種データから抽出
 					if (element.制度=="予防接種"){
@@ -362,6 +380,7 @@
 						//console.log(element.内容)
 						//とりあえず内容の中身を全角だろうが半角だろうがnumに格納
 						var num = element.内容;
+						console.log("num="+num);
 						if (num.match(/[０-９]/g)){
 							num = num.replace(/[０-９]/g, function(s) {
       							return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
@@ -370,19 +389,15 @@
 							console.log(num);
 						}
 						//先に読み込んでおいたteikiyobousesshu.csvのデータを格納したvaccine_dataの番号とnumをマッチングしたレコードを抽出
-						var result = vaccine_data.filter(el => el.番号 === num);
-						/*result = vaccine_data.filter(function(v) {
-							return v.番号 === num;
-						});*/
-						//原因不明だがたまにfilterがコケてresultが空の時があるのでその場合は再検索
-						if (result.length < 1){
-							console.log(result);
-							console.log("find again!");
-							result = vaccine_data.filter(el => el.番号 == num);
+						for(i=0; i<21; i++){
+							if (num==vaccine_data[i][0]){
+								result = vaccine_data[i];
+								//console.log(result);
+							}
 						}
-						//filter関数の結果は複数帰ってくるので、その先頭であるresult[0]の[0]が必須!!
-						var vaccine_info = "■対象年齢<br>　" + result[0].対象年齢 + "<br>■標準的な接種年齢<br>　" + result[0].標準的な接種年齢 + "<br>■接種回数<br>　" + result[0].接種回数 + "<br>■接種間隔<br>　" + result[0].接種間隔 + "<br>■備考<br>　" + result[0].備考 + "<br>■委託医療機関<br>　" + result[0].委託医療機関 + "<br>■疾患別情報<br>　" +result[0].疾患別情報;
-						var $content =  '<ul id="content">' + vaccine_info + '<br>' + '</ul></li>';						
+						var vaccine_info = "■対象年齢<br>　" + result[2]+ "<br>■標準的な接種年齢<br>　" + result[3] + "<br>■接種回数<br>　" + result[4] + "<br>■接種間隔<br>　" + result[5] + "<br>■備考<br>　" + result[6] + "<br>■委託医療機関<br>　" + result[7] + "<br>■疾患別情報<br>　" +result[8];
+						//ダブルクオーテーション削除
+						var $content =  '<ul id="content">' + vaccine_info.replace(/"/g, "") + '<br>' + '</ul></li>';						
 					} else {
 						//予防接種以外の場合は、内容に書かれている記述をそのまま採用する
 						var $content = '<ul id="content">' + element.内容 + '<br>' + '</ul></li>';
