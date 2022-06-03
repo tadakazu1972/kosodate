@@ -276,7 +276,7 @@
 		//var clinic_data = [];
     	//CSV読み込み d3.jsでShift JISのCSVファイルを読み込む　https://qiita.com/_likr/items/d9b3d10e115c789719fa
 		//csvのヘッダー -> element.で使用
-		//№,名称,郵便番号,住所,方書,電話番号,市町村区分,ロタリックス,ロタテック,ＨＩＢ,小児用肺炎球菌,Ｂ型肝炎,四種混合,MR,水痘,日本脳炎,二種混合,子宮頸がん,高齢者インフルエンザ,高齢者肺炎球菌,BCG
+		//№,名称,郵便番号,住所,方書,電話番号,市町村区分,ロタリックス,ロタテック,Ｈｉｂ,小児用肺炎球菌,Ｂ型肝炎,四種混合,MR,水痘,日本脳炎,二種混合,子宮頸がん,高齢者インフルエンザ,高齢者肺炎球菌,BCG
 		d3.csv(clinic_url)
 	  	  .mimeType('text/csv; charset=shift_jis')
 	  	  .on('load', function(data){
@@ -287,7 +287,7 @@
 					var vaccination = [];
 					vaccination[0] = element.ロタリックス === "" ? "" : "ﾛﾀﾘｯｸｽ:"+element.ロタリックス;
 					vaccination[1] = element.ロタテック === "" ? "" : "  ﾛﾀﾃｯｸ:"+element.ロタテック;
-					vaccination[2] = element.ＨＩＢ === "" ? "" : "  ﾋﾌﾞ:"+element.ＨＩＢ;
+					vaccination[2] = element.Ｈｉｂ === "" ? "" : "  ﾋﾌﾞ:"+element.Ｈｉｂ;
 					vaccination[3] = element.小児用肺炎球菌 === "" ? "" : "  小児用肺炎球菌:"+element.小児用肺炎球菌;
 					vaccination[4] = element.Ｂ型肝炎 === "" ? "" : "  B型肝炎:"+element.Ｂ型肝炎;
 					vaccination[5] = element.四種混合 === "" ? "" : "  四種混合:"+element.四種混合;
@@ -365,7 +365,7 @@
 		//var clinic_data = [];
     	//CSV読み込み d3.jsでShift JISのCSVファイルを読み込む　https://qiita.com/_likr/items/d9b3d10e115c789719fa
 		//csvのヘッダー -> element.で使用
-		//№,名称,郵便番号,住所,方書,電話番号,市町村区分,ロタリックス,ロタテック,ＨＩＢ,小児用肺炎球菌,Ｂ型肝炎,四種混合,MR,水痘,日本脳炎,二種混合,子宮頸がん,高齢者インフルエンザ,高齢者肺炎球菌,BCG
+		//№,名称,郵便番号,住所,方書,電話番号,市町村区分,ロタリックス,ロタテック,Ｈｉｂ,小児用肺炎球菌,Ｂ型肝炎,四種混合,MR,水痘,日本脳炎,二種混合,子宮頸がん,高齢者インフルエンザ,高齢者肺炎球菌,BCG
 		d3.csv(clinic_url)
 	  	  .mimeType('text/csv; charset=shift_jis')
 	  	  .on('load', function(data){
@@ -376,7 +376,7 @@
 					var vaccination = [];
 					vaccination[0] = element.ロタリックス === "" ? "" : "ﾛﾀﾘｯｸｽ:"+element.ロタリックス;
 					vaccination[1] = element.ロタテック === "" ? "" : "  ﾛﾀﾃｯｸ:"+element.ロタテック;
-					vaccination[2] = element.ＨＩＢ === "" ? "" : "  ﾋﾌﾞ:"+element.ＨＩＢ;
+					vaccination[2] = element.Ｈｉｂ === "" ? "" : "  ﾋﾌﾞ:"+element.Ｈｉｂ;
 					vaccination[3] = element.小児用肺炎球菌 === "" ? "" : "  小児用肺炎球菌:"+element.小児用肺炎球菌;
 					vaccination[4] = element.Ｂ型肝炎 === "" ? "" : "  B型肝炎:"+element.Ｂ型肝炎;
 					vaccination[5] = element.四種混合 === "" ? "" : "  四種混合:"+element.四種混合;
