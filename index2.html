@@ -175,10 +175,11 @@
   </head>
   <body>
 	<div id="logo">
-		<a href="https://www.city.osaka.lg.jp/index.html"><img src="osakacity_logo.png" alt="大阪市 OSAKA CITY"></a>
+		<a href="https://www.city.osaka.lg.jp/index.html"><img src="https://www.city.osaka.lg.jp/css/img/id_header.png" alt="大阪市 OSAKA CITY"></a>
     </div>
 	<h5><div id="kuname"></div></h5>
 	<h4>項目を選択していただくと、子育てに関する情報が表示されます。お子様の年齢にあわせて健診や予防接種など各種情報をご確認ください。</h4>
+	<h4>※ワクチン名の丸数字は回数を表しています<br>（例：①→１回目）</h4>
 	<br>
 	<div class="summary">
 		<p><div id="kuname2"></div></p>
@@ -214,7 +215,7 @@
 	//var ku = decodeURIComponent(key["ku"]);
 	var ku = "〇〇区";
 	//var file = decodeURIComponent(key["file"]);
-	var file = "kita2";
+	var file = "data";
 	//トップページからクリックで引き継いだ区名をidタグkunameに表示する処理
 	document.getElementById("kuname").innerHTML = ku + "　年齢別子育て情報";
 	//
@@ -236,6 +237,7 @@
 	var result = []; //vaccine_dataからfind番号でマッチングした列情報を格納する
 	//CSV読み込み d3.jsでShift JISのCSVファイルを読み込む　https://qiita.com/_likr/items/d9b3d10e115c789719fa
 	var filename = "https://www.city.osaka.lg.jp/kenko/cmsfiles/contents/0000282/282789/teikiyobousesshu.csv?time="+new Date().getTime();
+	//var filename = "teikiyobousesshu.csv?time="+new Date().getTime();
 	var csvData = new Array();
 	var xhr  = new XMLHttpRequest();
 	xhr.open("GET", filename, false);
@@ -244,6 +246,8 @@
 	var CR = String.fromCharCode(13)
 	var LF = String.fromCharCode(10);
 	var lines = xhr.responseText.split(CR+LF);
+	var vaccine_num = lines.length - 2;
+	//console.log(vaccine_num);
 	//ヘッダーを読んでしまうのでi=1に注意
 	for (var i= 1; i < lines.length; i++){
 		var cells = lines[i].split(",");
@@ -328,6 +332,12 @@
 				isNextChome = true;
 			} else 	if (isNextTown) {
 					var $chome = '<li>'+element.月齢+'<ul>';
+						//data.csvにおいて、２歳0か月の後に３歳0か月とchome_old==="0か月"と同じとなることでアコーディオンが崩れてしまうのを防ぐための措置
+						//区役所が今後、０か月を０ヶ月としたり、０を全角数字、0半角数字と書き換える可能性があるため、0半角と０全角を含むかどうかで判断することとする。
+						var s = element.月齢;
+						if (s.match(/0/)||s.match(/０/)){
+							isNextChome = true;
+						}
 			} else {
 				var $chome = "";
 			}
@@ -380,7 +390,7 @@
 						//console.log(element.内容)
 						//とりあえず内容の中身を全角だろうが半角だろうがnumに格納
 						var num = element.内容;
-						console.log("num="+num);
+						//console.log("num="+num);
 						if (num.match(/[０-９]/g)){
 							num = num.replace(/[０-９]/g, function(s) {
       							return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
@@ -389,13 +399,18 @@
 							console.log(num);
 						}
 						//先に読み込んでおいたteikiyobousesshu.csvのデータを格納したvaccine_dataの番号とnumをマッチングしたレコードを抽出
-						for(i=0; i<21; i++){
+						for(i=0; i<vaccine_num; i++){
 							if (num==vaccine_data[i][0]){
 								result = vaccine_data[i];
 								//console.log(result);
 							}
 						}
-						var vaccine_info = "■対象年齢<br>　" + result[2]+ "<br>■標準的な接種年齢<br>　" + result[3] + "<br>■接種回数<br>　" + result[4] + "<br>■接種間隔<br>　" + result[5] + "<br>■備考<br>　" + result[6] + "<br>■委託医療機関<br>　" + result[7] + "<br>■疾患別情報<br>　" +result[8];
+						//任意接種のインフルエンザとおたふくかぜはコンテンツを変える（委託医療機関と疾患別情報がない）
+						if (num==21 || num==22){
+							var vaccine_info = "■対象年齢<br>　" + result[2]+ "<br>■標準的な接種年齢<br>　" + result[3] + "<br>■接種回数<br>　" + result[4] + "<br>■接種間隔<br>　" + result[5] + "<br>■備考<br>　" + result[6] +"<br>"+result[9];
+						} else {
+							var vaccine_info = "■対象年齢<br>　" + result[2]+ "<br>■標準的な接種年齢<br>　" + result[3] + "<br>■接種回数<br>　" + result[4] + "<br>■接種間隔<br>　" + result[5] + "<br>■備考<br>　" + result[6] + "<br>■委託医療機関<br>　" + result[7] + "<br>■疾患別情報<br>　" +result[8]+"<br>"+result[9];
+						}
 						//ダブルクオーテーション削除
 						var $content =  '<ul id="content">' + vaccine_info.replace(/"/g, "") + '<br>' + '</ul></li>';						
 					} else {
@@ -404,7 +419,13 @@
 					}
 					
 					//ため込む
-					str = str + $town + $chome + $banchi + $gaiku + $content;
+					//任意接種のインフルエンザとおたふくかぜは予防接種の見出しに"(自費)任意接種"を追記
+					if (num==21 || num==22){
+						str = str + $town + $chome + $banchi+"(自費)任意接種" + $gaiku + $content;
+					} else {
+						str = str + $town + $chome + $banchi + $gaiku + $content;
+					}
+					
 					break;
 				default:
 					//ため込む
@@ -443,15 +464,7 @@
 		   });
 	*/
 	</script>
-	<!-- Sibulla tracking code start -->
-	<!--残念ながらみやすい解析は市HPからダイレクトにcsvを読み込みすると競合するのでコメントアウト-->
-    <!--<script type="text/javascript">
-	(function(){ var b = document.getElementsByTagName('script')[0],sib = document.createElement('script');
-	sib.type = 'text/javascript';sib.async = true;
-	sib.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'ma001.sibulla.com/dekatag/access?id=aGaskA6u';
-	b.parentNode.insertBefore(sib,b);}());
-	-->
-	</script>
-	<!-- /Sibulla tracking code end -->	
+	<!-- tracking code start -->
+	<!-- tracking code end -->	
   </body>
 </html>
