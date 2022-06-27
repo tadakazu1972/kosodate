@@ -28,6 +28,9 @@
 		h1,h2,h5,p { text-align: center; }
 		svg { position:fixed; left:30%; border:1px; background-color: white; text-align:left; }
 		path { fill:white; stroke:black; stroke-width:0.25; }
+		#message {
+			margin: 8px;
+		}
 		.tooltip {
 			position:absolute;
 			visibility: visible;
@@ -202,6 +205,7 @@
 	<body onload="drawSearch()">
 		<div class="block">
 		　<br>
+		<div id="message">
 		  <h4>大阪市ホームページ<a href="https://www.city.osaka.lg.jp/kenko/page/0000282789.html">「各種予防接種委託医療機関について」</a>に掲載の「委託医療機関一覧（オープンデータ）」から検索します。</h4>
 		  <br>
 		  <h5>検索する予防接種：</h5>
@@ -213,6 +217,7 @@
 		  <h1><select name="ku_selector" id="listKu"></select><button type="button" id="listKuButton" onclick="clickSearch()">検索</button></h1>
 		  <h1><input type="text" id="clinicName" placeholder="病院名を入力する"/><button type="button" id="listKuButton" onclick="clickSearchName()">検索</button></h1>
 		  <!-- <button id="btnSearch" type="button" onclick="clickSearch()">検索</button> -->
+		</div>
 		  <br>
 		  <h5><div id="message_jumpgooglemap"></div></h5>
 		  <h5><div id="message_vaccination"></div></h5>
@@ -248,10 +253,15 @@
 		document.getElementById("selected_vaccination").innerHTML = v_name[v_index];
 
         //区のselect optionをセット
-        var ku_name = ["北区","都島区","福島区","此花区","中央区","西区","港区","大正区","天王寺区","浪速区","西淀川区","淀川区","東淀川区","東成区","生野区","旭区","城東区","鶴見区","阿倍野区","住之江区",,"住吉区","東住吉区","平野区","西成区","市外"];
+        var ku_name = ["北区","都島区","福島区","此花区","中央区","西区","港区","大正区","天王寺区","浪速区","西淀川区","淀川区","東淀川区","東成区","生野区","旭区","城東区","鶴見区","阿倍野区","住之江区","住吉区","東住吉区","平野区","西成区","市外"];
 	    var ku_list;
         for (var i in ku_name){
-            ku_list += "<option value='" + ku_name[i] + "'>" + ku_name[i] + "</option>";
+			//該当区の際にはselectedを追記して初期選択された状態とする
+			if (i==0){
+				ku_list += "<option value='" + ku_name[i] + "' selected>" + ku_name[i] + "</option>";
+			} else {
+				ku_list += "<option value='" + ku_name[i] + "'>" + ku_name[i] + "</option>";
+			}
         }
         document.getElementById("listKu").innerHTML = ku_list;
     }
